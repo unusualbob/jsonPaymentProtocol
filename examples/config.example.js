@@ -1,12 +1,20 @@
 module.exports = {
   network: 'test',
-  currency: 'BTC',
   rpcServer: {
-    // should set this to match your own bitcoin rpc settings
-    username: 'fakeUser',
-    password: 'fakePassword',
-    ipAddress: '127.0.0.1',
-    port: '18332'
+    BTC: {
+      // should set this to match your own bitcoin-core rpc settings
+      username: 'fakeUser',
+      password: 'fakePassword',
+      ipAddress: '127.0.0.1',
+      port: '18332'
+    },
+    BCH: {
+      // should set this to match your own bitcoin-abc rpc settings
+      username: 'fakeUser',
+      password: 'fakePassword',
+      ipAddress: '127.0.0.1',
+      port: '18332'
+    }
   },
   trustedKeys: {
     // The idea is that you or the wallet provider will populate this with keys that are trusted, we have provided a few possible approaches

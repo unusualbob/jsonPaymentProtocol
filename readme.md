@@ -47,7 +47,7 @@ paymentProtocol.getRawPaymentRequest(requestUrl, function (err, response) {
 
       // Execute these in parallel
       // Sending payment to server via payment protocol
-      paymentProtocol.broadcastPayment(currency, signedRawTransaction, paymentRequest.paymentUrl, function(err, response) {
+      paymentProtocol.sendSignedPayment(currency, signedRawTransaction, paymentRequest.paymentUrl, function(err, response) {
         console.log('Ignore any errors here if you already received verified above');
       });
       // Sending payment to bitcoin p2p network

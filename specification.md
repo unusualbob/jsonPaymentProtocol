@@ -30,6 +30,7 @@ A GET request should be made to the payment protocol url.
 
 #### Headers
 * `Accept` should be set to `application/payment-request`.
+* `X-Version` set to `v2` 
 
 ### Response
 The response will be a JSON format payload quite similar to the BIP70 format.
