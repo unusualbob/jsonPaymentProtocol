@@ -97,8 +97,7 @@ PaymentProtocol.prototype.selectPaymentOption = async function(paymentUrl, chain
     url: paymentUrl,
     method: 'POST',
     headers: {
-      'Accept': 'application/payment-request',
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/payment-request',
       'x-paypro-version': 2
     },
     body: JSON.stringify({

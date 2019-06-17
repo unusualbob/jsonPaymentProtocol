@@ -26,13 +26,18 @@ async function main() {
   let index = 1;
   let choices = [];
   let unavailable = [];
+  const rates = paymentOptions.responseData.exchangeRates;
 
-  for (let {chain, network, estimatedAmount, decimals} of paymentOptions.responseData.paymentOptions) {
+  for (let {chain, network, estimatedAmount, decimals, minerFee} of paymentOptions.responseData.paymentOptions) {
     if (!config.rpcServers[chain]) {
       return unavailable.push({chain, network, estimatedAmount, decimals});
     }
     choices.push(index);
-    console.log(`${index++}. ${chain} ${estimatedAmount * Math.pow(10, -decimals)}`);
+
+    // Must display network cost if provided, not doing so would be hiding costs
+    const networkCost = minerFee / Math.pow(10, decimals );
+    const usdCost = networkCost * rates[chain].USD;
+    console.log(`${index++}. ${chain} ${estimatedAmount * Math.pow(10, -decimals)} - (Network Cost: $${round(usdCost, 2)})`);
   }
 
   if (unavailable.length) {
