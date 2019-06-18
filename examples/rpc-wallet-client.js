@@ -20,13 +20,26 @@ let rpcPass;
 async function main() {
   const url = await promptly.prompt('What is the payment protocol uri?', {required: true});
   const paymentOptions = await client.getPaymentOptions(url);
+  const rates = await fetchExchangeRates();
 
   console.log(paymentOptions.responseData.memo);
 
   let index = 1;
   let choices = [];
   let unavailable = [];
-  const rates = paymentOptions.responseData.exchangeRates;
+
+  function getBaseRate(code) {
+    const rate = rates.data.find((el) => {
+      return el.code === code;
+    });
+    return rate.rate;
+  }
+
+  function getExchangeRate(fromCode, toCode) {
+    const fromRate = getBaseRate(fromCode);
+    const toRate = getBaseRate(toCode);
+    return round(toRate / fromRate, 8);
+  }
 
   for (let {chain, network, estimatedAmount, decimals, minerFee} of paymentOptions.responseData.paymentOptions) {
     if (!config.rpcServers[chain]) {
@@ -36,8 +49,8 @@ async function main() {
 
     // Must display network cost if provided, not doing so would be hiding costs
     const networkCost = minerFee / Math.pow(10, decimals );
-    const usdCost = networkCost * rates[chain].USD;
-    console.log(`${index++}. ${chain} ${estimatedAmount * Math.pow(10, -decimals)} - (Network Cost: $${round(usdCost, 2)})`);
+    const usdCost = networkCost * getExchangeRate(chain, 'USD');
+    console.log(`${index++}. ${chain} ${round(estimatedAmount * Math.pow(10, -decimals), decimals)} - (Network Cost: $${round(usdCost, 2)})`);
   }
 
   if (unavailable.length) {
@@ -139,6 +152,21 @@ async function main() {
     console.log('Error sending payment');
     throw e;
   }
+}
+
+function fetchExchangeRates() {
+  return new Promise((resolve, reject) => {
+    request({
+      method: 'GET',
+      uri: 'https://bitpay.com/rates/',
+      json: true
+    }, (err, response, body) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  });
 }
 
 /**
